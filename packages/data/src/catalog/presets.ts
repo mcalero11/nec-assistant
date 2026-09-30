@@ -1,5 +1,5 @@
 import { acPresets } from './ac-presets.js'
-import type { TemplateLabel } from './types.js'
+import type { DevicePresetAc, TemplateLabel } from './types.js'
 
 /**
  * Generic device-preset shape consumed by preset questions: `values` holds the
@@ -16,22 +16,43 @@ export interface DevicePreset {
   values: Record<string, number | string>
 }
 
-/** Adapter over the typed A/C presets (which keep their richer shape for the dashboard). */
-const acDevicePresets: readonly DevicePreset[] = acPresets.map((p) => ({
-  id: p.id,
-  label: p.label,
-  detail: {
-    es: `${p.typicalW} W · MCA ${p.typicalMcaA} A · MOCP ${p.typicalMocpA} A`,
-    en: `${p.typicalW} W · MCA ${p.typicalMcaA} A · MOCP ${p.typicalMocpA} A`,
-  },
-  synonyms: p.synonyms,
-  values: {
-    mcaA: p.typicalMcaA,
-    mocpA: p.typicalMocpA,
-    voltage: p.voltage,
-    typicalW: p.typicalW,
-  },
-}))
+/**
+ * Adapter over the typed A/C presets (which keep their richer shape for the
+ * dashboard). A plate marks either MCA/MOCP or corriente nominal/máxima; the
+ * template's `acNameplate` call reads 0 as «not on the plate», so every field
+ * is always present in `values`.
+ */
+// Widened from the `as const` union so the optional plate fields are readable on every entry.
+const acDevicePresets: readonly DevicePreset[] = (acPresets as readonly DevicePresetAc[]).map((p) => {
+  const ratedA = p.typicalRatedA ?? 0
+  const maxA = p.typicalMaxA ?? 0
+  const mcaA = p.typicalMcaA ?? 0
+  const mocpA = p.typicalMocpA ?? 0
+  const plate =
+    mcaA > 0 && mocpA > 0
+      ? { es: `MCA ${mcaA} A · MOCP ${mocpA} A`, en: `MCA ${mcaA} A · MOCP ${mocpA} A` }
+      : {
+          es: `nominal ${ratedA} A · máx. ${maxA} A`,
+          en: `rated ${ratedA} A · max ${maxA} A`,
+        }
+  return {
+    id: p.id,
+    label: p.label,
+    detail: {
+      es: `${p.typicalW} W · ${plate.es} · ${p.voltage} V`,
+      en: `${p.typicalW} W · ${plate.en} · ${p.voltage} V`,
+    },
+    synonyms: p.synonyms,
+    values: {
+      mcaA,
+      mocpA,
+      ratedA,
+      maxA,
+      voltage: p.voltage,
+      typicalW: p.typicalW,
+    },
+  }
+})
 
 /**
  * Electric showers / tankless heaters sold in El Salvador (Lorenzetti-class

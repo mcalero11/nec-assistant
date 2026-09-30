@@ -1,11 +1,14 @@
 {
-  "note": "Hand-verified end-to-end template runs (PRD requires ≥2 fixture configurations per template). Every quantity computed by hand: hots = run × (1+wastage) × 2 rounded up to whole meters; EGC = run × (1+wastage); EMT sticks = ceil(run×1.1 / 3.05); couplings = ceil(run/3.05); EMT straps = ceil(run/3)+1 (358.30); LFNC straps = ceil(run/0.9)+1 (356.30). Circuit values anchor to the hand-verified mini-split circuit golden (24 A MCA continuous, 15 m, 240 V → #10 Cu, 30 A, 1.221% drop); fixture 3 hand-checked: 10 A continuous → #14 (protection min(25, 15@60C, 15 cap) = 15 ≥ 12.5), drop 2×8×10×10.3/1000 = 1.648 V = 0.6867%. Ambient defaults resolve from the location answer (exterior→40°C, interior→35°C) since the ambientC question landed; at 60°C terminations with continuous load the termination limit governs, so sizes are unchanged vs the old 30°C basis — hand-checked: #10 THWN-2 derated 40×0.91=36.4 ≥ 24 (case 1/2/4 ampacity floor), #14 THHN 25×0.96=24 ≥ 10 (case 3). 2026-08-31: the A/C circuit no longer double-applies the continuous 125% on top of the nameplate MCA (440.4(B) already includes it), the device now comes from the nameplate MOCP under 440.22 with 240.4(G) exempting the conductor from the general 240.4 check, and the supply voltage question defaults to 220 V. Conductor sizes are UNCHANGED in these fixtures (the 60 °C termination limit governs at these currents); breaker/disconnect and the drop percentage moved. Drop scales exactly by 240/220 because dropVolts is voltage-independent. The flexible run to the condenser now defaults to coraza LT (LFMC, Art. 350) with its two liquidtight fittings; poliducto stays selectable via options.whipType.",
+  "note": "Hand-verified end-to-end template runs (PRD requires ≥2 fixture configurations per template). Every quantity computed by hand: hots = run × (1+wastage) × 2 rounded up to whole meters; EGC = run × (1+wastage); EMT sticks = ceil(run×1.1 / 3.05); couplings = ceil(run/3.05); EMT straps = ceil(run/3)+1 (358.30); LFNC straps = ceil(run/0.9)+1 (356.30). Circuit values anchor to the hand-verified mini-split circuit golden (24 A MCA continuous, 15 m, 240 V → #10 Cu, 30 A, 1.221% drop); fixture 3 hand-checked: 10 A continuous → #14 (protection min(25, 15@60C, 15 cap) = 15 ≥ 12.5), drop 2×8×10×10.3/1000 = 1.648 V = 0.6867%. Ambient defaults resolve from the location answer (exterior→40°C, interior→35°C) since the ambientC question landed; at 60°C terminations with continuous load the termination limit governs, so sizes are unchanged vs the old 30°C basis — hand-checked: #10 THWN-2 derated 40×0.91=36.4 ≥ 24 (case 1/2/4 ampacity floor), #14 THHN 25×0.96=24 ≥ 10 (case 3). 2026-08-31: the A/C circuit no longer double-applies the continuous 125% on top of the nameplate MCA (440.4(B) already includes it), the device now comes from the nameplate MOCP under 440.22 with 240.4(G) exempting the conductor from the general 240.4 check, and the supply voltage question defaults to 220 V. Conductor sizes are UNCHANGED in these fixtures (the 60 °C termination limit governs at these currents); breaker/disconnect and the drop percentage moved. Drop scales exactly by 240/220 because dropVolts is voltage-independent. The flexible run to the condenser now defaults to coraza LT (LFMC, Art. 350) with its two liquidtight fittings; poliducto stays selectable via options.whipType. 2026-09-30: the plate now carries voltage/ratedA/maxA/mcaA/mocpA (0 = not marked) and an acNameplate call derives MCA/MOCP when a Latin-market plate marks only corriente nominal/máxima; existing cases pass their marked MCA/MOCP through unchanged. Case 5 (Samsung AR40H12D0BMX, the user's own 115 V plate: 11.8 A nominal, 17.5 A max): MCA = max(1.25×11.8 = 14.75, 17.5) = 17.5; MOCP: 1.75×11.8 = 20.65 → 20 A ≥ 17.5 ✓ (no 225 % step); 14 AWG fails the 60 °C termination (15 < 17.5) → 12 AWG (THHN 30×0.96 = 28.8, termination 20 ≥ 17.5); 1 polo → breaker-1p-20; drop 2×10×17.5×6.5/1000 = 2.275 V at the 110 V default = 2.0682 %; EGC 12 (20 A); hots ceil(10×1.1×2) = 22, EGC 11, EMT ceil(11/3.05) = 4 sticks, couplings ceil(10/3.05) = 4, straps ceil(10/3)+1 = 5; the calibre-fabricante warning fires (12 AWG). Case 6 (Latin 230 V plate, manual: 7.5 A nominal, 11 A max): MCA = max(9.375, 11) = 11; 1.75×7.5 = 13.125 < 15 → 440.22(A) Exception sets 15 A; 14 AWG THWN-2 25×0.91 = 22.75, termination 15 ≥ 11 ✓; drop 2×15×11×10.3/1000 = 3.399 V / 220 = 1.545 %; EGC 14 (15 A); hots ceil(15×1.1×2) = 33, EGC 17, EMT 6 sticks, couplings 5, straps 6.",
   "cases": [
     {
       "name": "ac-36k, 15 m, exterior, EMT + curvas (wastage 10%, 3 vueltas)",
       "answers": {
         "device": {
           "id": "ac-36k",
+          "voltage": 230,
+          "ratedA": 0,
+          "maxA": 0,
           "mcaA": 24,
           "mocpA": 40,
           "typicalW": 3400
@@ -118,6 +121,9 @@
       "answers": {
         "device": {
           "id": "ac-36k",
+          "voltage": 230,
+          "ratedA": 0,
+          "maxA": 0,
           "mcaA": 24,
           "mocpA": 40,
           "typicalW": 3400
@@ -230,6 +236,9 @@
       "answers": {
         "device": {
           "id": "ac-12k",
+          "voltage": 230,
+          "ratedA": 0,
+          "maxA": 0,
           "mcaA": 10,
           "mocpA": 15,
           "typicalW": 1150
@@ -331,6 +340,9 @@
       "answers": {
         "device": {
           "id": "ac-36k",
+          "voltage": 230,
+          "ratedA": 0,
+          "maxA": 0,
           "mcaA": 24,
           "mocpA": 40,
           "typicalW": 3400
@@ -436,6 +448,235 @@
           "ambient-30c"
         ],
         "warningCount": 0
+      }
+    },
+    {
+      "name": "ac-12k-115v (Samsung AR40H12D0BMX, placa latina: 11.8 A nominal / 17.5 A máx, sin MCA/MOCP), 10 m, interior, EMT + curvas — MCA 17.5 → #12 (term 60 °C: #14 = 15 < 17.5); MOCP 175 % = 20.65 → 20 A, 1 polo; drop 2×10×17.5×6.5/1000 = 2.275 V / 110 = 2.068%",
+      "answers": {
+        "device": {
+          "id": "ac-12k-115v",
+          "voltage": 115,
+          "ratedA": 11.8,
+          "maxA": 17.5,
+          "mcaA": 0,
+          "mocpA": 0,
+          "typicalW": 1090
+        },
+        "runLengthM": 10,
+        "location": "interior",
+        "panelSlots": "2polos"
+      },
+      "options": {
+        "conduitType": "emt",
+        "bends": "curvas",
+        "bendCount": 3,
+        "wastagePercent": 10
+      },
+      "expected": {
+        "parameters": {
+          "conductor": "12",
+          "insulation": "THHN",
+          "breaker": 20,
+          "polos": "1 polo",
+          "mca": 17.5,
+          "mocp": 20,
+          "disconnect": 30,
+          "conduit": "1/2"
+        },
+        "dropPercent": 2.068,
+        "bom": [
+          {
+            "ruleId": "breaker",
+            "itemId": "breaker-1p-20",
+            "qty": 1
+          },
+          {
+            "ruleId": "hots",
+            "itemId": "thhn-cu-12",
+            "qty": 22
+          },
+          {
+            "ruleId": "egc-wire",
+            "itemId": "thhn-cu-12",
+            "qty": 11
+          },
+          {
+            "ruleId": "conduit-emt",
+            "itemId": "emt-tube-12",
+            "qty": 4
+          },
+          {
+            "ruleId": "emt-connectors",
+            "itemId": "emt-connector-12",
+            "qty": 2
+          },
+          {
+            "ruleId": "emt-couplings",
+            "itemId": "emt-coupling-12",
+            "qty": 4
+          },
+          {
+            "ruleId": "emt-elbows",
+            "itemId": "emt-elbow-12",
+            "qty": 3
+          },
+          {
+            "ruleId": "emt-straps",
+            "itemId": "strap-12",
+            "qty": 5
+          },
+          {
+            "ruleId": "disconnect",
+            "itemId": "disconnect-60-3r",
+            "qty": 1
+          },
+          {
+            "ruleId": "whip",
+            "itemId": "lfmc-12",
+            "qty": 2
+          },
+          {
+            "ruleId": "whip-connectors-lt",
+            "itemId": "lfmc-connector-12",
+            "qty": 1
+          },
+          {
+            "ruleId": "whip-connectors-lt-90",
+            "itemId": "lfmc-connector-90-12",
+            "qty": 1
+          },
+          {
+            "ruleId": "punteras",
+            "itemId": "puntera-cable",
+            "qty": 6
+          }
+        ],
+        "assumptionKeys": [
+          "ac-nameplate-derived",
+          "dry-location",
+          "ambient-used",
+          "disconnect-nonfused"
+        ],
+        "absentAssumptionKeys": [
+          "continuous-125",
+          "egc-upsized-250-122b",
+          "ambient-30c"
+        ],
+        "warningCount": 1
+      }
+    },
+    {
+      "name": "placa latina 230 V manual (7.5 A nominal / 11 A máx, sin MCA/MOCP), 15 m, exterior, EMT + curvas — MCA 11 → #14 THWN-2; 175 % = 13.1 < 15 → Excepción 440.22(A): 15 A, 2 polos; drop 2×15×11×10.3/1000 = 3.399 V / 220 = 1.545%",
+      "answers": {
+        "device": {
+          "voltage": 230,
+          "ratedA": 7.5,
+          "maxA": 11,
+          "mcaA": 0,
+          "mocpA": 0,
+          "typicalW": 1650
+        },
+        "runLengthM": 15,
+        "location": "exterior",
+        "panelSlots": "2polos"
+      },
+      "options": {
+        "conduitType": "emt",
+        "bends": "curvas",
+        "bendCount": 3,
+        "wastagePercent": 10
+      },
+      "expected": {
+        "parameters": {
+          "conductor": "14",
+          "insulation": "THWN-2",
+          "breaker": 15,
+          "polos": "2 polos",
+          "mca": 11,
+          "mocp": 15,
+          "disconnect": 30,
+          "conduit": "1/2"
+        },
+        "dropPercent": 1.545,
+        "bom": [
+          {
+            "ruleId": "breaker",
+            "itemId": "breaker-2p-15",
+            "qty": 1
+          },
+          {
+            "ruleId": "hots",
+            "itemId": "thhn-cu-14",
+            "qty": 33
+          },
+          {
+            "ruleId": "egc-wire",
+            "itemId": "thhn-cu-14",
+            "qty": 17
+          },
+          {
+            "ruleId": "conduit-emt",
+            "itemId": "emt-tube-12",
+            "qty": 6
+          },
+          {
+            "ruleId": "emt-connectors",
+            "itemId": "emt-connector-12",
+            "qty": 2
+          },
+          {
+            "ruleId": "emt-couplings",
+            "itemId": "emt-coupling-12",
+            "qty": 5
+          },
+          {
+            "ruleId": "emt-elbows",
+            "itemId": "emt-elbow-12",
+            "qty": 3
+          },
+          {
+            "ruleId": "emt-straps",
+            "itemId": "strap-12",
+            "qty": 6
+          },
+          {
+            "ruleId": "disconnect",
+            "itemId": "disconnect-60-3r",
+            "qty": 1
+          },
+          {
+            "ruleId": "whip",
+            "itemId": "lfmc-12",
+            "qty": 2
+          },
+          {
+            "ruleId": "whip-connectors-lt",
+            "itemId": "lfmc-connector-12",
+            "qty": 1
+          },
+          {
+            "ruleId": "whip-connectors-lt-90",
+            "itemId": "lfmc-connector-90-12",
+            "qty": 1
+          },
+          {
+            "ruleId": "punteras",
+            "itemId": "puntera-cable",
+            "qty": 6
+          }
+        ],
+        "assumptionKeys": [
+          "ac-nameplate-derived",
+          "ambient-used",
+          "disconnect-nonfused"
+        ],
+        "absentAssumptionKeys": [
+          "continuous-125",
+          "dry-location",
+          "egc-upsized-250-122b",
+          "ambient-30c"
+        ],
+        "warningCount": 1
       }
     }
   ]

@@ -23,10 +23,17 @@ const WIRE_TABLE = {
 }
 
 /**
- * Seed template #1: aire acondicionado mini-split (240 V circuit + disconnect + whip).
+ * Seed template #1: aire acondicionado mini-split (circuit + disconnect + whip).
  * Declarative data interpreted by @nec-assistant/engine runTemplate — the engine-call
- * graph chains sizeCircuit → egcSize → sizeConduit exactly like the composition idiom
- * documented in conduit-fill.ts.
+ * graph chains acNameplate → sizeCircuit → egcSize → sizeConduit exactly like the
+ * composition idiom documented in conduit-fill.ts.
+ *
+ * Two markets, one flow. A unit sold in the United States runs on 208–230 V
+ * (2-pole breaker) and its plate marks MCA/MOCP; a unit sold in Latin America is
+ * often 115 V (1-pole) and its plate marks corriente nominal and corriente
+ * máxima instead. The nameplate call derives whichever pair is missing, and the
+ * plate voltage picks the pole count, the panel-voltage default and the breaker
+ * item — so the same template prices both.
  */
 export const acMinisplitTemplate: JobTemplate = {
   id: 'ac-minisplit',
@@ -43,36 +50,33 @@ export const acMinisplitTemplate: JobTemplate = {
       type: 'preset',
       catalog: 'ac-presets',
       default: 'ac-12k',
-      // answers.device.mcaA / .mocpA ← preset.values (generic-runner contract).
-      sets: { mcaA: 'mcaA', mocpA: 'mocpA', typicalW: 'typicalW' },
+      // answers.device.* ← preset.values (generic-runner contract). Every plate
+      // field is always present; 0 means «the plate does not mark this».
+      sets: {
+        voltage: 'voltage',
+        ratedA: 'ratedA',
+        maxA: 'maxA',
+        mcaA: 'mcaA',
+        mocpA: 'mocpA',
+        typicalW: 'typicalW',
+      },
       manualFields: [
         {
-          id: 'mcaA',
-          label: { es: 'MCA — corriente mínima del circuito (A)', en: 'MCA — minimum circuit ampacity (A)' },
-          default: 10,
-          min: 1,
-          max: 60,
-          step: 0.1,
-          unit: 'A',
-          urlKey: 'mca',
-        },
-        {
-          id: 'mocpA',
-          label: { es: 'MOCP — protección máxima (A)', en: 'MOCP — maximum overcurrent protection (A)' },
-          default: 15,
-          min: 5,
-          // 60 A, not 90: above that the disconnect table (30/60 A) and the
-          // 2-pole breakers stocked locally run out, and a residential
-          // mini-split needing more than 60 A is outside this template.
-          max: 60,
-          step: 5,
-          unit: 'A',
-          urlKey: 'mocp',
+          // 115 V (1 polo) or 208–230 V (2 polos): the plate says which. Anything
+          // under 160 V is read as the 120 V branch (see the `supply` derived value).
+          id: 'voltage',
+          label: { es: 'Voltaje de placa (V)', en: 'Nameplate voltage (V)' },
+          default: 230,
+          min: 100,
+          max: 250,
+          step: 1,
+          unit: 'V',
+          urlKey: 'pv',
         },
         {
           // Watts is how these units are specified locally, so it is an entry
           // field, not only a preset value. It is shown and quoted but is NOT
-          // what the conductor is sized from — that is the MCA above.
+          // what the conductor is sized from — that is the MCA below.
           id: 'typicalW',
           label: { es: 'Consumo de placa (W)', en: 'Nameplate power draw (W)' },
           default: 1150,
@@ -82,10 +86,57 @@ export const acMinisplitTemplate: JobTemplate = {
           unit: 'W',
           urlKey: 'pw',
         },
+        {
+          // «Corriente nominal» — the rated-load current every plate carries
+          // (440.6(A)). Defaults sketch a 230 V 12k inverter; on a Latin-market
+          // plate this pair is all there is, and MCA/MOCP stay at 0.
+          id: 'ratedA',
+          label: { es: 'Corriente nominal (A)', en: 'Rated current (A)' },
+          default: 8,
+          min: 0,
+          max: 60,
+          step: 0.1,
+          unit: 'A',
+          urlKey: 'ia',
+        },
+        {
+          id: 'maxA',
+          label: { es: 'Corriente máxima (A) — 0 si no aparece', en: 'Max current (A) — 0 if not marked' },
+          default: 12,
+          min: 0,
+          max: 80,
+          step: 0.1,
+          unit: 'A',
+          urlKey: 'im',
+        },
+        {
+          // Marked MCA/MOCP (440.4(B)) win over the derivation when present.
+          id: 'mcaA',
+          label: { es: 'MCA de placa (A) — 0 si no aparece', en: 'Nameplate MCA (A) — 0 if not marked' },
+          default: 0,
+          min: 0,
+          max: 60,
+          step: 0.1,
+          unit: 'A',
+          urlKey: 'mca',
+        },
+        {
+          id: 'mocpA',
+          label: { es: 'MOCP de placa (A) — 0 si no aparece', en: 'Nameplate MOCP (A) — 0 if not marked' },
+          default: 0,
+          min: 0,
+          // 60 A, not 90: above that the disconnect table (30/60 A) and the
+          // 2-pole breakers stocked locally run out, and a residential
+          // mini-split needing more than 60 A is outside this template.
+          max: 60,
+          step: 5,
+          unit: 'A',
+          urlKey: 'mocp',
+        },
       ],
       presetNote: {
-        es: 'Valores típicos de placa; verifique la placa de SU equipo.',
-        en: 'Typical nameplate values; verify YOUR unit’s plate.',
+        es: 'Valores típicos de placa; verifique la placa de SU equipo. Si su placa trae corriente nominal y máxima en vez de MCA/MOCP, entre esas y deje MCA/MOCP en 0.',
+        en: 'Typical nameplate values; verify YOUR unit’s plate. If the plate marks rated and max current instead of MCA/MOCP, enter those and leave MCA/MOCP at 0.',
       },
       label: { es: 'Capacidad del equipo (BTU)', en: 'Unit capacity (BTU)' },
       urlKey: 'd',
@@ -105,14 +156,17 @@ export const acMinisplitTemplate: JobTemplate = {
     {
       // The plate says 208–230 V; the panel here measures nearer 220 than 240,
       // and a lower voltage means a HIGHER drop percentage, so 240 was the
-      // optimistic reading. Default 220 (user, 2026-08-31).
+      // optimistic reading. Default 220 (user, 2026-08-31). A 115 V unit hangs
+      // off one leg of that same service, so its default is half: 110.
       id: 'systemVoltage',
       type: 'number',
       unit: 'V',
-      min: 200,
+      min: 100,
       max: 250,
       step: 1,
-      default: 220,
+      default: {
+        $cond: { if: { ref: 'answers.device.voltage', lt: 160 }, then: 110, else: 220 },
+      },
       label: { es: 'Voltaje medido en el tablero', en: 'Voltage measured at the panel' },
       urlKey: 'v',
     },
@@ -165,10 +219,11 @@ export const acMinisplitTemplate: JobTemplate = {
       type: 'choice',
       default: '2polos',
       choices: [
-        { value: '2polos', label: { es: 'Sí, hay 2 espacios', en: 'Yes, 2 slots free' } },
+        // Value kept as '2polos' for URL back-compat; it now just means «yes».
+        { value: '2polos', label: { es: 'Sí, hay espacio', en: 'Yes, there is space' } },
         { value: 'ninguno', label: { es: 'No hay espacio', en: 'No space' } },
       ],
-      label: { es: '¿Hay espacio en el panel para un térmico de 2 polos?', en: 'Panel space for a 2-pole breaker?' },
+      label: { es: '¿Hay espacio en el panel para el térmico nuevo?', en: 'Panel space for the new breaker?' },
       urlKey: 'p',
     },
   ],
@@ -240,10 +295,22 @@ export const acMinisplitTemplate: JobTemplate = {
 
   calls: [
     {
+      // Whatever the plate marks (MCA/MOCP, or corriente nominal/máxima) becomes
+      // the MCA/MOCP pair Article 440 sizes from. Marked values pass through.
+      id: 'nameplate',
+      fn: 'acNameplate',
+      input: {
+        ratedA: { $ref: 'answers.device.ratedA' },
+        maxA: { $ref: 'answers.device.maxA' },
+        mcaA: { $ref: 'answers.device.mcaA' },
+        mocpA: { $ref: 'answers.device.mocpA' },
+      },
+    },
+    {
       id: 'circuit',
       fn: 'sizeCircuit',
       input: {
-        loadA: { $ref: 'answers.device.mcaA' },
+        loadA: { $ref: 'calls.nameplate.mcaA' },
         // NOT continuous. The nameplate MCA is already 125% of the compressor
         // plus the fan motors (440.32, marked per 440.4(B)) — applying the
         // continuous factor again double-counted it and bought a gauge nobody
@@ -252,7 +319,7 @@ export const acMinisplitTemplate: JobTemplate = {
         // Article 440 governs the device: taken from the nameplate MOCP so it
         // rides through locked-rotor inrush, with 240.4(G) exempting the
         // conductor from the general 240.4 protection rule.
-        mocpA: { $ref: 'answers.device.mocpA' },
+        mocpA: { $ref: 'calls.nameplate.mocpA' },
         lengthM: { $ref: 'answers.runLengthM' },
         systemVoltage: { $ref: 'answers.systemVoltage' },
         material: 'copper',
@@ -307,6 +374,17 @@ export const acMinisplitTemplate: JobTemplate = {
 
   derived: [
     {
+      // 120 V (one hot + neutral, 1-pole breaker) vs 240 V (two hots, 2-pole),
+      // from the plate voltage. 160 V splits 100–127 V plates from 200–250 V ones.
+      id: 'supply',
+      kind: 'value',
+      value: {
+        $cond: { if: { ref: 'answers.device.voltage', lt: 160 }, then: 120, else: 240 },
+      },
+      citations: ['nec2026.s440_4_b'],
+      label: { es: 'Alimentación', en: 'Supply' },
+    },
+    {
       id: 'disconnect',
       kind: 'min-rating-at-least',
       ratings: [30, 60],
@@ -338,10 +416,18 @@ export const acMinisplitTemplate: JobTemplate = {
     },
     {
       id: 'breaker',
-      label: { es: 'Térmico (2 polos)', en: 'Breaker (2-pole)' },
+      label: { es: 'Térmico', en: 'Breaker' },
       value: { $ref: 'calls.circuit.breaker.rating' },
       unit: 'A',
       citationsFrom: 'calls.circuit.breaker',
+    },
+    {
+      id: 'polos',
+      label: { es: 'Polos del térmico', en: 'Breaker poles' },
+      value: {
+        $cond: { if: { ref: 'derived.supply.value', eq: 120 }, then: '1 polo', else: '2 polos' },
+      },
+      citationsFrom: 'derived.supply',
     },
     {
       id: 'watts',
@@ -354,11 +440,18 @@ export const acMinisplitTemplate: JobTemplate = {
       citations: ['nec2026.s440_4_b'],
     },
     {
-      id: 'mocp',
-      label: { es: 'Protección máxima (MOCP) según la placa de datos', en: 'Maximum protection (MOCP) per nameplate' },
-      value: { $ref: 'answers.device.mocpA' },
+      id: 'mca',
+      label: { es: 'Corriente mínima del circuito (MCA) — de placa o derivada', en: 'Minimum circuit ampacity (MCA) — marked or derived' },
+      value: { $ref: 'calls.nameplate.mcaA' },
       unit: 'A',
-      citations: ['nec2026.s440_4_b', 'nec2026.s440_22'],
+      citationsFrom: 'calls.nameplate',
+    },
+    {
+      id: 'mocp',
+      label: { es: 'Protección máxima (MOCP) — de placa o derivada', en: 'Maximum protection (MOCP) — marked or derived' },
+      value: { $ref: 'calls.nameplate.mocpA' },
+      unit: 'A',
+      citationsFrom: 'calls.nameplate',
     },
     {
       id: 'disconnect',
@@ -389,20 +482,28 @@ export const acMinisplitTemplate: JobTemplate = {
       id: 'breaker',
       item: {
         map: {
-          keys: ['calls.circuit.breaker.rating'],
+          keys: ['derived.supply.value', 'calls.circuit.breaker.rating'],
           table: {
-            '15': 'breaker-2p-15',
-            '20': 'breaker-2p-20',
-            '25': 'breaker-2p-25',
-            '30': 'breaker-2p-30',
+            // 120 V units land on a 1-pole breaker; the local catalog stocks up
+            // to 50 A single-pole, which no residential 115 V unit approaches.
+            '120|15': 'breaker-1p-15',
+            '120|20': 'breaker-1p-20',
+            '120|25': 'breaker-1p-25',
+            '120|30': 'breaker-1p-30',
+            '120|40': 'breaker-1p-40',
+            '120|50': 'breaker-1p-50',
+            '240|15': 'breaker-2p-15',
+            '240|20': 'breaker-2p-20',
+            '240|25': 'breaker-2p-25',
+            '240|30': 'breaker-2p-30',
             // 440.22 takes the rating from the nameplate MOCP, so the map has to
             // cover every standard rating the MOCP field can reach (5–60 A), not
             // just the ones a load-derived breaker used to land on.
-            '35': 'breaker-2p-35',
-            '40': 'breaker-2p-40',
-            '45': 'breaker-2p-45',
-            '50': 'breaker-2p-50',
-            '60': 'breaker-2p-60',
+            '240|35': 'breaker-2p-35',
+            '240|40': 'breaker-2p-40',
+            '240|45': 'breaker-2p-45',
+            '240|50': 'breaker-2p-50',
+            '240|60': 'breaker-2p-60',
           },
         },
       },
@@ -418,7 +519,10 @@ export const acMinisplitTemplate: JobTemplate = {
           multiplier: 2,
         },
       },
-      note: { es: 'los 2 conductores de fase', en: 'the 2 hot conductors' },
+      note: {
+        es: 'los 2 conductores del circuito (fase y fase a 240 V; fase y neutro a 120 V)',
+        en: 'the 2 circuit conductors (two hots at 240 V; hot and neutral at 120 V)',
+      },
     },
     {
       id: 'egc-wire',
@@ -648,8 +752,8 @@ export const acMinisplitTemplate: JobTemplate = {
       id: 'panel-space',
       when: { ref: 'answers.panelSlots', eq: 'ninguno' },
       text: {
-        es: 'No hay espacio en el panel para un térmico de 2 polos: considere un subpanel o reorganizar circuitos (verificar con electricista autorizado).',
-        en: 'No panel space for a 2-pole breaker: consider a subpanel or rearranging circuits (verify with a licensed electrician).',
+        es: 'No hay espacio en el panel para el térmico nuevo: considere un subpanel o reorganizar circuitos (verificar con electricista autorizado).',
+        en: 'No panel space for the new breaker: consider a subpanel or rearranging circuits (verify with a licensed electrician).',
       },
     },
   ],

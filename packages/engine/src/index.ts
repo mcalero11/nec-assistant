@@ -29,6 +29,7 @@ export {
   type BoxFillResult,
   type SizeBoxInput,
 } from './box-fill.js'
+export { acNameplate, type AcNameplateInput, type AcNameplateResult } from './ac-nameplate.js'
 export { standardBreaker, type BreakerInput, type BreakerResult } from './breaker.js'
 export { sizeCircuit, type CircuitInput, type CircuitResult } from './circuit.js'
 export {

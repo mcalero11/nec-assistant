@@ -40,6 +40,8 @@ const KNOWN_UNPRICED = new Set([
   // see PRICES.md.
   'breaker-1p-15',
   'breaker-1p-20',
+  // Added 2026-09-30 for 120 V mini-splits (ac-minisplit BOM); same research gap.
+  'breaker-1p-25',
   'breaker-1p-30',
   'breaker-1p-40',
   'breaker-1p-50',

@@ -23,6 +23,7 @@ export const catalogItems = [
   // Térmicos 1 polo
   { id: 'breaker-1p-15', name: { es: 'térmico 1 polo 15 A', en: '1-pole breaker 15 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 15', 'breaker 1x15'] },
   { id: 'breaker-1p-20', name: { es: 'térmico 1 polo 20 A', en: '1-pole breaker 20 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 20', 'breaker 1x20'] },
+  { id: 'breaker-1p-25', name: { es: 'térmico 1 polo 25 A', en: '1-pole breaker 25 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 25', 'breaker 1x25'] },
   { id: 'breaker-1p-30', name: { es: 'térmico 1 polo 30 A', en: '1-pole breaker 30 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 30', 'breaker 1x30'] },
   { id: 'breaker-1p-40', name: { es: 'térmico 1 polo 40 A', en: '1-pole breaker 40 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 40', 'breaker 1x40'] },
   { id: 'breaker-1p-50', name: { es: 'térmico 1 polo 50 A', en: '1-pole breaker 50 A' }, unit: 'unidad', category: 'material', synonyms: ['flipón 50', 'breaker 1x50'] },

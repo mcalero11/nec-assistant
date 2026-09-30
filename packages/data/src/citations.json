@@ -383,11 +383,23 @@
     "reasonEn": "A/C disconnect",
     "reasonEs": "desconectador de A/C"
   },
+  "nec2026.s440_6": {
+    "en": "NEC 2026, 440.6(A) — the rated-load current marked on the nameplate is the basis for conductor and device sizing",
+    "es": "NEC 2026, 440.6(A) — la corriente nominal marcada en la placa es la base para el calibre y el térmico",
+    "reasonEn": "nameplate rated current",
+    "reasonEs": "corriente nominal de placa"
+  },
   "nec2026.s440_22": {
-    "en": "NEC 2026, 440.22 — branch-circuit protection not exceeding nameplate MOCP",
-    "es": "NEC 2026, 440.22 — protección del circuito ramal sin exceder el MOCP de placa",
-    "reasonEn": "stay at or below nameplate MOCP",
-    "reasonEs": "no exceder el MOCP de placa"
+    "en": "NEC 2026, 440.22(A) — branch-circuit protection: nameplate MOCP, or within 175 % (up to 225 % for starting) of the rated-load current, never under 15 A",
+    "es": "NEC 2026, 440.22(A) — protección del circuito ramal: MOCP de placa, o dentro del 175 % (hasta 225 % por arranque) de la corriente nominal, nunca menor de 15 A",
+    "reasonEn": "breaker sized per Article 440",
+    "reasonEs": "térmico según el Artículo 440"
+  },
+  "nec2026.s440_32": {
+    "en": "NEC 2026, 440.32 — branch-circuit conductors for a single motor-compressor: ampacity at least 125 % of the rated-load current",
+    "es": "NEC 2026, 440.32 — conductores del circuito ramal para un motocompresor: ampacidad de al menos el 125 % de la corriente nominal",
+    "reasonEn": "conductor at 125 % of rated current",
+    "reasonEs": "conductor al 125 % de la corriente nominal"
   },
   "nec2026.in210_19_vd": {
     "en": "NEC 2026, Informational Note to 210.19 — recommended max voltage drop 3% branch / 5% total",

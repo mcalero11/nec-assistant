@@ -1,10 +1,13 @@
 import type { DevicePresetAc } from './types.js'
 
 /**
- * Typical mini-split nameplate presets (MCA/MOCP) by capacity, 208/230 V 1φ.
- * These are representative values from common inverter units sold in Central
- * America — the UI must always surface «valores típicos de placa; verifique la
- * placa de SU equipo» and offer manual MCA/MOCP entry (PRD US-1).
+ * Typical mini-split nameplate presets by capacity. The 230 V entries carry
+ * MCA/MOCP (U.S.-market marking, 440.4(B)); the 115 V entry carries corriente
+ * nominal/máxima the way plates sold in Latin America do, and the engine
+ * derives MCA/MOCP from them (`acNameplate`). These are representative values
+ * from common inverter units sold in Central America — the UI must always
+ * surface «valores típicos de placa; verifique la placa de SU equipo» and
+ * offer manual nameplate entry (PRD US-1).
  *
  * Verification: packages/data/WATTAGES.md is the research procedure. Per-entry
  * `verifiedAt`/`source` stamps supersede the blanket caveat as they land;
@@ -36,6 +39,24 @@ export const acPresets = [
     synonyms: ['12000', '12k', 'una tonelada'],
     verifiedAt: '2026-08-30',
     source: 'https://www.morleyassociates.com/wp-content/uploads/2021/03/DLCSRAH12AAK.pdf (Midea 9 A/15 A; observado MCA 9–13 A, MOCP 15 A en 5 modelos)',
+  },
+  {
+    // 115 V single-pole unit — the plate marks no MCA/MOCP. Values are the user's
+    // own nameplate (Samsung AR40H12D0BMX, 12,130 BTU/h, 1,090 W, 11.8 A rated,
+    // 17.5 A max), so both the MCA/MOCP basis and the wattage are plate-verified.
+    id: 'ac-12k-115v',
+    btu: 12000,
+    tons: 1,
+    voltage: 115,
+    typicalRatedA: 11.8,
+    typicalMaxA: 17.5,
+    typicalW: 1090,
+    typicalWVerifiedAt: '2026-09-30',
+    typicalWSource: 'placa — verificado por el usuario (Samsung AR40H12D0BMX: 1090 W)',
+    label: { es: '12,000 BTU (1 ton) · 115 V', en: '12,000 BTU (1 ton) · 115 V' },
+    synonyms: ['12000 115', '12k 115v', 'una tonelada 110', 'aire de 110', 'un polo'],
+    verifiedAt: '2026-09-30',
+    source: 'placa — verificado por el usuario (Samsung AR40H12D0BMX: 115 V, 11.8 A nominal, 17.5 A máx.)',
   },
   {
     id: 'ac-18k',

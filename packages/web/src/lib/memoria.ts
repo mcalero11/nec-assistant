@@ -352,6 +352,41 @@ function callDetailBlocks(calls: readonly TemplateCallResult[], m: Messages): Me
           ],
         }
       }
+      case 'acNameplate': {
+        const r = call.result
+        const mocpNotes = [
+          r.mocpDerived ? m.memoria.nameplateMocpDerived : m.memoria.nameplateMarked,
+          ...(r.startingAllowanceApplied ? [m.memoria.nameplateStartingNote] : []),
+          ...(r.minimum15Applied ? [m.memoria.nameplateMin15Note] : []),
+        ]
+        return {
+          kind: 'keyValue',
+          title: m.memoria.nameplateTitle,
+          rows: [
+            {
+              label: m.memoria.nameplateRated,
+              value: `${fmtNumber(r.ratedA)} A`,
+              ...(r.mcaDerived ? {} : { note: m.memoria.nameplateRatedInferred }),
+              citations: ['nec2026.s440_6'],
+            },
+            ...(r.maxA !== undefined
+              ? [{ label: m.memoria.nameplateMax, value: `${fmtNumber(r.maxA)} A`, citations: [] as CitationKey[] }]
+              : []),
+            {
+              label: 'MCA',
+              value: `${fmtNumber(r.mcaA)} A`,
+              note: r.mcaDerived ? m.memoria.nameplateMcaDerived : m.memoria.nameplateMarked,
+              citations: r.mcaDerived ? ['nec2026.s440_32'] : ['nec2026.s440_4_b'],
+            },
+            {
+              label: 'MOCP',
+              value: `${fmtNumber(r.mocpA)} A`,
+              note: mocpNotes.join(' · '),
+              citations: ['nec2026.s440_22'],
+            },
+          ],
+        }
+      }
       case 'boxFill': {
         const r = call.result
         return {

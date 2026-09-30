@@ -251,6 +251,26 @@ export const glossary = {
     },
     necArticles: ['nec2026.s440_4_b', 'nec2026.s440_22'],
   },
+  corrienteNominal: {
+    es: 'corriente nominal',
+    en: 'rated-load current (RLA)',
+    synonyms: ['rated current', 'RLA', 'amperaje nominal', 'corriente de placa'],
+    definition: {
+      es: 'Dato de placa: los amperios que el equipo consume trabajando normal. En placas latinas es lo que hay en vez de MCA; el NEC (440.6) calcula el calibre y el térmico a partir de ella.',
+      en: 'Nameplate value: the amps the unit draws in normal operation. On Latin-market plates it stands in for the MCA; the NEC (440.6) sizes conductor and breaker from it.',
+    },
+    necArticles: ['nec2026.s440_6', 'nec2026.s440_32'],
+  },
+  corrienteMaxima: {
+    es: 'corriente máxima',
+    en: 'maximum current',
+    synonyms: ['max current', 'corriente máx', 'amperaje máximo'],
+    definition: {
+      es: 'Dato de placa de equipos inverter: lo más que el equipo puede consumir sostenido, a plena capacidad. El circuito debe aguantarla, y el térmico no debe quedar por debajo de ella.',
+      en: 'Nameplate value on inverter units: the most the unit can draw sustained, at full capacity. The circuit must carry it, and the breaker must not sit below it.',
+    },
+    necArticles: ['nec2026.s440_32', 'nec2026.s440_22'],
+  },
   derrateo: {
     es: 'derrateo',
     en: 'derating',

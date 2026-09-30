@@ -3,7 +3,7 @@ import { acMinisplitTemplate, circuitoRamalTemplate, type JobTemplate } from '@n
 import { EngineError, isNonCompliant, resolveTemplateState, runTemplate } from '@nec-assistant/engine'
 
 const baseAnswers = {
-  device: { id: 'ac-36k', mcaA: 24, mocpA: 40, typicalW: 3400 },
+  device: { id: 'ac-36k', voltage: 230, ratedA: 0, maxA: 0, mcaA: 24, mocpA: 40, typicalW: 3400 },
   runLengthM: 15,
   location: 'exterior',
   panelSlots: '2polos',
@@ -75,12 +75,13 @@ describe('runTemplate mechanics', () => {
   it('exposes raw engine-call results in declaration order (memoria source)', () => {
     const result = runTemplate(acMinisplitTemplate, { answers: baseAnswers })
     expect(result.calls.map((c) => ({ id: c.id, fn: c.fn }))).toEqual([
+      { id: 'nameplate', fn: 'acNameplate' },
       { id: 'circuit', fn: 'sizeCircuit' },
       { id: 'egc', fn: 'egcSize' },
       { id: 'conduit', fn: 'sizeConduit' },
     ])
-    const circuit = result.calls[0]
-    if (circuit?.fn !== 'sizeCircuit') expect.unreachable('first call must be the circuit')
+    const circuit = result.calls[1]
+    if (circuit?.fn !== 'sizeCircuit') expect.unreachable('second call must be the circuit')
     else {
       expect(['ampacity', 'voltage-drop', 'protection']).toContain(circuit.result.governedBy)
       expect(circuit.result.breaker.rating).toBeGreaterThan(0)
@@ -119,7 +120,7 @@ describe('runTemplate mechanics', () => {
     // the local catalog is rated for that load.
     try {
       runTemplate(acMinisplitTemplate, {
-        answers: { ...baseAnswers, device: { mcaA: 900, mocpA: 900, typicalW: 100000 } },
+        answers: { ...baseAnswers, device: { voltage: 230, ratedA: 0, maxA: 0, mcaA: 900, mocpA: 900, typicalW: 100000 } },
       })
       expect.unreachable('the disconnect catalog rule should still stop this run')
     } catch (e) {

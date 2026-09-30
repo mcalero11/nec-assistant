@@ -76,6 +76,7 @@ Status: `por verificar` until a run stamps the entry. Values current as of 2026-
 | tv | 150 | 120 | covered | Samsung CU7000 max consumption: 43″ 130 W, 50″ 145 W, 55″ 150 W | — | ✅ 2026-08-30 |
 | bomba | 1,200 | 120 | motor | NEC Tabla 430.248 FLC ½ HP 115 V = 9.8 A ≈ 1,176 VA (the code-mandated basis per 430.6(A)(1)/120.11); real nameplates run 3–5.5 A (Truper 4.7 A, Pretul 3 A, Pedrollo PKm 60 5.5 A) — table is conservative, as designed | — | ✅ 2026-08-30 (base de tabla NEC) |
 | ac-9k / ac-12k / ac-18k / ac-24k | 1,290 / 1,840 / 2,580 / 3,130 | 240 | ac | **derived** from ac-presets MCA (rule above) — verify the MCA preset instead | — | ac-12k/ac-18k ✅ 2026-08-30 (lockstep); ac-9k/ac-24k pendientes |
+| ac-12k-115v | 1,357 | 120 | ac | **derived** from the ac-presets twin: corriente nominal 11.8 A × 115 V (Latin-market plate, no MCA) | — | ✅ 2026-09-30 (placa del usuario, lockstep) |
 
 ### ac-presets.ts (typicalMcaA / typicalMocpA)
 
@@ -83,6 +84,7 @@ Status: `por verificar` until a run stamps the entry. Values current as of 2026-
 |---|---|---|---|---|---|
 | ac-9k | 7 | 15 | observed MCA 9–13 A (Midea 9, Senville 10, TCL 10, Pioneer 13) — **7 A is below every published value**; MOCP 15 unanimous | see proposal below | por verificar — hallazgo registrado |
 | ac-12k | 10 | 15 | observed MCA 9–13 A, MOCP 15 A across 5 models (Midea 9, TCL 10–11, Senville 12, Pioneer 13) — 10/15 squarely in range | — | ✅ 2026-08-30 |
+| ac-12k-115v | — (nominal 11.8 A / máx 17.5 A) | — | Samsung AR40H12D0BMX, placa fotografiada por el usuario: 115 V, 11.8 A nominal, 17.5 A máx, 1,090 W, 12,130 BTU/h. Sin MCA/MOCP (placa IEC); el motor los deriva (`acNameplate`: MCA 17.5 A, MOCP 20 A) | — | ✅ 2026-09-30 (placa — verificado por el usuario; W también estampado) |
 | ac-18k | 14 | 20 | observed MCA 12–19 A, MOCP mode 20 A across 6 models (TCL 12–13/20, MrCool 15/20, Senville 15/20; Midea 17/25, Pioneer 19/30 higher) — 14/20 representative | — | ✅ 2026-08-30 |
 | ac-24k | 17 | 25 | observed MCA 13–24.9 A; MOCP **dominant 30 A** (TCL 17/30, MrCool 18/30, Midea 20/30, Pioneer 22/30; only Senville pairs 24.9/25) — MCA 17 fine, MOCP 25 underrepresents | see proposal below | por verificar — hallazgo registrado |
 | ac-36k | 24 | 40 | observed MCA 25–33 A (Midea/MrCool/Senville-AURA 25, Senville-LETO 33) — 24 just below the floor; MOCP 30–40 observed, median 35, 40 covers worst case | see proposal below | por verificar — hallazgo registrado |
@@ -110,6 +112,17 @@ updates `golden/load-calc.json` in step, and ideally the user's nameplate check 
 | ac-36k | MCA 24 / MOCP 40 | propose **MCA 25 / MOCP 35** | observed MCA floor is 25 (3 of 4 models); MOCP median 35 (30/35/35/40) |
 
 ## Run reports
+
+### 2026-09-30 — user nameplate (no research pass)
+
+- **Stamped (1 AC + 1 appliance twin):** `ac-12k-115v`, from the user's own Samsung
+  AR40H12D0BMX plate (115 V, 11.8 A nominal, 17.5 A máx, 1,090 W). First entry whose
+  provenance is a nameplate rather than a spec sheet, and the first whose plate marks
+  corriente nominal/máxima instead of MCA/MOCP — the derivation lives in the engine
+  (`acNameplate`, 440.6 / 440.32 / 440.22(A)), not in the catalog, so the stored
+  values are the plate's own.
+- **Wattage:** 1,090 W is the plate's rated power input, so `typicalWVerifiedAt` is
+  stamped too (removed from KNOWN_UNVERIFIED_W by construction — the entry was never in it).
 
 ### 2026-08-30 run report
 

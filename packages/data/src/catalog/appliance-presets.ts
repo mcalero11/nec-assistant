@@ -154,6 +154,18 @@ export const appliancePresets = [
     source: 'derivado de ac-presets.ts (MCA ÷ 1.25 × 230 V)',
   },
   {
+    // 115 V twin of the Samsung plate in ac-presets.ts: VA = corriente nominal ×
+    // 115 V (11.8 × 115 = 1,357), the running draw the load calc counts.
+    id: 'ac-12k-115v',
+    label: { es: 'A/C mini split 12,000 BTU (115 V)', en: 'Mini-split A/C 12,000 BTU (115 V)' },
+    synonyms: ['aire 12000 110', 'mini split 12k 110', 'aire de un polo'],
+    typicalVa: 1357,
+    voltage: 120,
+    category: 'ac',
+    verifiedAt: '2026-09-30',
+    source: 'derivado de ac-presets.ts (corriente nominal de placa 11.8 A × 115 V)',
+  },
+  {
     id: 'ac-18k',
     label: { es: 'A/C mini split 18,000 BTU', en: 'Mini-split A/C 18,000 BTU' },
     synonyms: ['aire 18000', 'mini split 18k'],

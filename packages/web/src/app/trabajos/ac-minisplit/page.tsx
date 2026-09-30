@@ -6,7 +6,7 @@ import { TemplateRunner } from '@/components/jobs/template-runner'
 export const metadata: Metadata = {
   title: 'Aire acondicionado mini-split',
   description:
-    'Planifique la instalación eléctrica de un mini-split: calibre, térmico, desconectador y tubería con citas NEC, más la lista de materiales con precios.',
+    'Planifique la instalación eléctrica de un mini-split de 115 V o 230 V: calibre, térmico, desconectador y tubería con citas NEC, más la lista de materiales con precios. Acepta placas con MCA/MOCP o con corriente nominal y máxima.',
 }
 
 export default function AcMinisplitPage() {

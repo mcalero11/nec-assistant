@@ -9,6 +9,7 @@ import {
   type JobTemplate,
   type TemplateLabel,
 } from '@nec-assistant/data'
+import { acNameplate, type AcNameplateResult } from './ac-nameplate.js'
 import { boxFill, type BoxFillResult } from './box-fill.js'
 import { sizeCircuit, type CircuitResult } from './circuit.js'
 import { sizeConduit, type ConduitFillResult } from './conduit-fill.js'
@@ -168,6 +169,7 @@ const CALL_REGISTRY: Record<string, EngineFn> = {
   egcSize: egcSize as unknown as EngineFn,
   gecSize: gecSize as unknown as EngineFn,
   boxFill: boxFill as unknown as EngineFn,
+  acNameplate: acNameplate as unknown as EngineFn,
 }
 
 /* --------------------------------- results --------------------------------- */
@@ -215,6 +217,7 @@ export type TemplateCallResult =
   | { id: string; fn: 'egcSize'; result: EgcResult }
   | { id: string; fn: 'gecSize'; result: GecResult }
   | { id: string; fn: 'boxFill'; result: BoxFillResult }
+  | { id: string; fn: 'acNameplate'; result: AcNameplateResult }
 
 export interface TemplateRunResult extends WithProvenance {
   parameters: ResolvedParameter[]

@@ -20,9 +20,18 @@ export interface DevicePresetAc {
   btu: number
   tons: number
   voltage: number
-  /** Typical nameplate values — always verify against the actual unit's plate. */
-  typicalMcaA: number
-  typicalMocpA: number
+  /**
+   * Typical nameplate values — always verify against the actual unit's plate.
+   * A plate carries ONE of two pairs: MCA/MOCP (marked per 440.4(B) on units
+   * sold in the United States) or corriente nominal/máxima (IEC-style plates
+   * on units sold in Latin America). The engine's `acNameplate` derives the
+   * missing pair (440.6, 440.32, 440.22(A)); the adapter in presets.ts passes
+   * 0 for whatever the plate does not mark.
+   */
+  typicalMcaA?: number
+  typicalMocpA?: number
+  typicalRatedA?: number
+  typicalMaxA?: number
   /**
    * Typical input power in watts while cooling. Locals spec these units in
    * watts, so this is the number people ask for — but it is NOT what conductors

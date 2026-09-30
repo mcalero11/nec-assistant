@@ -15,6 +15,7 @@ import {
   standardBoxes,
   standardBreakers,
   table31016,
+  type DevicePresetAc,
 } from '@nec-assistant/data'
 import {
   ambientFactor,
@@ -401,11 +402,13 @@ describe('residential load properties', () => {
       expect(preset.typicalVa).toBeGreaterThan(0)
       expect(preset.synonyms.length).toBeGreaterThan(0)
     }
-    // typicalVa ≈ (typicalMcaA ÷ 1.25) × 230, rounded to 10 (see appliance-presets.ts docblock).
-    for (const ac of acPresets) {
+    // typicalVa ≈ (typicalMcaA ÷ 1.25) × 230, rounded to 10 (see appliance-presets.ts
+    // docblock); a plate that marks corriente nominal instead gives rated A × plate V.
+    for (const ac of acPresets as readonly DevicePresetAc[]) {
       const appliance = appliancePresets.find((p) => p.id === ac.id)
       if (!appliance) continue
-      expect(appliance.typicalVa).toBeCloseTo((ac.typicalMcaA / 1.25) * 230, -1)
+      const runningA = ac.typicalMcaA != null ? ac.typicalMcaA / 1.25 : ac.typicalRatedA!
+      expect(appliance.typicalVa).toBeCloseTo(runningA * ac.voltage, -1)
     }
   })
 })
